@@ -58,6 +58,14 @@ setup_prerequisites() {
 
 # 安装 Docker 环境
 install_docker() {
+    # 检查是否已安装 Docker
+    if command -v docker &> /dev/null; then
+        display_status "检测到 Docker 已安装，跳过安装步骤。" "success"
+        docker --version  # 显示已安装的 Docker 版本
+        return
+    fi
+
+    # 如果未安装 Docker，则执行以下安装步骤
     display_status "正在安装 Docker..." "info"
     for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do 
         sudo apt-get remove -y $pkg
@@ -92,7 +100,7 @@ install_dria_node() {
     fi
 
     # 下载 Dria 节点文件
-    curl -L -o dkn-compute-node.zip https://github.com/firstbatchxyz/dkn-compute-launcher/releases/latest/download/dkn-compute-launcher-linux-amd64.zip
+    wget -q https://github.com/firstbatchxyz/dkn-compute-launcher/releases/latest/download/dkn-compute-launcher-linux-amd64.zip -O dkn-compute-node.zip
     
     # 检查解压目录是否存在，如果存在则删除以避免重复安装
     if [[ -d "dkn-compute-node" ]]; then
