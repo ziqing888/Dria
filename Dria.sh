@@ -58,14 +58,12 @@ setup_prerequisites() {
 
 # 安装 Docker 环境
 install_docker() {
-    # 检查是否已安装 Docker
     if command -v docker &> /dev/null; then
         display_status "检测到 Docker 已安装，跳过安装步骤。" "success"
-        docker --version  # 显示已安装的 Docker 版本
+        docker --version
         return
     fi
 
-    # 如果未安装 Docker，则执行以下安装步骤
     display_status "正在安装 Docker..." "info"
     for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do 
         sudo apt-get remove -y $pkg
@@ -93,22 +91,18 @@ install_dria_node() {
     display_status "下载并安装 Dria 节点..." "info"
     cd $HOME
 
-    # 检查文件是否已经存在，如果存在则删除以避免重复下载
     if [[ -f "dkn-compute-node.zip" ]]; then
         display_status "发现已有的 Dria 节点压缩文件，正在删除以避免重复下载..." "info"
         rm -f dkn-compute-node.zip
     fi
 
-    # 下载 Dria 节点文件
     wget -q https://github.com/firstbatchxyz/dkn-compute-launcher/releases/latest/download/dkn-compute-launcher-linux-amd64.zip -O dkn-compute-node.zip
     
-    # 检查解压目录是否存在，如果存在则删除以避免重复安装
     if [[ -d "dkn-compute-node" ]]; then
         display_status "发现已有的 Dria 节点目录，正在删除以避免重复安装..." "info"
         rm -rf dkn-compute-node
     fi
 
-    # 解压文件
     unzip dkn-compute-node.zip || { display_status "文件解压失败，请检查错误并重试。" "error"; return; }
     display_status "Dria 节点安装完成。" "success"
 }
@@ -125,6 +119,9 @@ run_dria_node() {
 main_menu() {
     while true; do
         clear
+        # 每次显示菜单时下载并显示 logo
+        curl -s https://raw.githubusercontent.com/ziqing888/logo.sh/refs/heads/main/logo.sh | bash
+        sleep 3
         echo -e "${MENU_COLOR}${BOLD}============================ Dria 节点管理工具 ============================${NORMAL}"
         echo -e "${MENU_COLOR}请选择操作:${NORMAL}"
         echo -e "${MENU_COLOR}1. 更新系统并安装依赖项${NORMAL}"
